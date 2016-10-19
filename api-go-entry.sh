@@ -26,4 +26,4 @@ esac
 
 ./wait-for-it.sh db_product:$dbPort -t 60
 goose up
-gin -p 80 run
+gin -p $PORT run
