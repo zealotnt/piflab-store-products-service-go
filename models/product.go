@@ -73,7 +73,14 @@ func getPage(offset uint, limit uint, total uint) PageUrl {
 	next := "/products?offset=" + strconv.FormatUint(nextNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
 	previous := "/products?offset=" + strconv.FormatUint(prevNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
 
+	// Nothing to show on next_url
 	if uint64(total) <= nextNum {
+		// If offset already zero, not thing to show on previous_url also
+		if offset == 0 {
+			return PageUrl{}
+		}
+
+		// At least, we have something to show on previous_url
 		return PageUrl{
 			Previous: &previous,
 		}
@@ -87,7 +94,6 @@ func getPage(offset uint, limit uint, total uint) PageUrl {
 		Next:     &next,
 		Previous: &previous,
 	}
-
 }
 
 func (products ProductSlice) GetPaging(offset uint, limit uint, total uint) *ProductPage {
