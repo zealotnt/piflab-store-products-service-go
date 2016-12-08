@@ -10,6 +10,6 @@ var _ = Describe("IndexHandler", func() {
 		response := Request("GET", "/", "")
 
 		Expect(response.Code).To(Equal(200))
-		Expect(response.Body).To(ContainSubstring(`"Product service version":"1.0.0"`))
+		Expect(response.Body).To(ContainSubstring(`"version":"Product service 1.0.0"`))
 	})
 })

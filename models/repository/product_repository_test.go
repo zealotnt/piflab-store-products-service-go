@@ -131,7 +131,7 @@ var _ = Describe("ProductRepositoryTest", func() {
 
 	Describe("Test GetPage", func() {
 		It("get one product successffully", func() {
-			products, count, err := ProductRepository{app.DB}.GetPage(0, 1, "")
+			products, count, err := ProductRepository{app.DB}.GetPage(0, 1, "id", "desc", "")
 			Expect(err).To(BeNil())
 
 			all, err := ProductRepository{app.DB}.CountProduct()
