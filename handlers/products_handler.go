@@ -33,7 +33,12 @@ func GetProductsHandler(app *App) HandlerFunc {
 			form.Limit = 10
 		}
 
-		products, total, err := ProductRepository{app.DB}.GetPage(form.Offset, form.Limit, form.Search)
+		if err := form.Validate(); err != nil {
+			JSON(w, err, 422)
+			return
+		}
+
+		products, total, err := ProductRepository{app.DB}.GetPage(form.Offset, form.Limit, form.SortField, form.SortOrder, form.Search)
 		if err != nil {
 			JSON(w, err, 500)
 			return

@@ -37,15 +37,15 @@ func (repo ProductRepository) GetAll() (*ProductSlice, error) {
 	return products, err
 }
 
-func (repo ProductRepository) GetPage(offset uint, limit uint, search string) (*ProductSlice, uint, error) {
+func (repo ProductRepository) GetPage(offset uint, limit uint, sort_field string, sort_order string, search string) (*ProductSlice, uint, error) {
 	products := &ProductSlice{}
 	var err error
 
 	if search == "" {
-		err = repo.DB.Order("id DESC").Offset(int(offset)).Limit(int(limit)).Find(products).Error
+		err = repo.DB.Order(sort_field + " " + sort_order).Offset(int(offset)).Limit(int(limit)).Find(products).Error
 	} else {
 		lower_search := strings.ToLower(search)
-		err = repo.DB.Order("id DESC").Offset(int(offset)).Limit(int(limit)).Where("LOWER(name) LIKE '%" + lower_search + "%'").Find(products).Error
+		err = repo.DB.Order(sort_field + " " + sort_order).Offset(int(offset)).Limit(int(limit)).Where("LOWER(name) LIKE '%" + lower_search + "%'").Find(products).Error
 	}
 
 	for idx := range *products {
