@@ -5,12 +5,49 @@ import (
 	. "github.com/o0khoiclub0o/piflab-store-api-go/models"
 	. "github.com/o0khoiclub0o/piflab-store-api-go/services"
 
+	"fmt"
 	"strings"
 	"time"
 )
 
 type ProductRepository struct {
 	*DB
+}
+
+func (repo ProductRepository) FindByListId(ids []uint64) *ProductListId {
+	products := &ProductSlice{}
+	repo.DB.Order("id asc").Where(ids).Find(products)
+
+	var id_has []uint64
+	for idx, product := range *products {
+		(*products)[idx].GetImageUrl()
+		id_has = append(id_has, uint64(product.Id))
+	}
+
+	// detect the product not returned from repo
+	var id_not_have []uint64
+	for _, val := range ids {
+		for _, val_has := range id_has {
+			if val_has == val {
+				// if the value is match, continue to next value
+				goto pass_next
+			}
+		}
+		// the id is not found if it goes there
+		id_not_have = append(id_not_have, val)
+	pass_next:
+		continue
+	}
+
+	var err string
+	if len(id_not_have) != 0 {
+		err += strings.Trim(strings.Replace(fmt.Sprint(id_not_have), " ", ",", -1), "[]")
+	}
+
+	return &ProductListId{
+		ProductSlice: *products,
+		Error:        err,
+	}
 }
 
 func (repo ProductRepository) FindById(id uint) (*Product, error) {
@@ -163,8 +200,8 @@ func (repo ProductRepository) CountProduct() (uint, error) {
 	return count, err
 }
 
-func (repo ProductRepository) DeleteProduct(id uint) (*Product, error) {
-	product, err := repo.FindById(id)
+func (repo ProductRepository) DeleteProduct(id uint64) (*Product, error) {
+	product, err := repo.FindById(uint(id))
 	if err != nil {
 		return product, err
 	}

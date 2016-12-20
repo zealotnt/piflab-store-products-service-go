@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type Context struct {
@@ -11,14 +12,37 @@ type Context struct {
 	GetParams url.Values
 }
 
-func (c Context) ID() uint {
+func (c Context) IDs() []uint64 {
+	id_param := c.Params["id"]
+
+	// Try to parse Id by 1 number, if success, return right away
+	id, err := strconv.ParseUint(id_param, 10, 32)
+	if err == nil {
+		return []uint64{id}
+	}
+
+	// Try to parse Id by comma seperated list
+	str_list := strings.Split(id_param, ",")
+	var uint_list []uint64
+	for _, str := range str_list {
+		id, err = strconv.ParseUint(str, 10, 32)
+		uint_list = append(uint_list, id)
+		if err != nil {
+			return []uint64{0}
+		}
+	}
+
+	return uint_list
+}
+
+func (c Context) ID() uint64 {
 	id, err := strconv.ParseUint(c.Params["id"], 10, 32)
 
 	if err != nil {
 		return 0
 	}
 
-	return uint(id)
+	return id
 }
 
 func (c Context) Limit() (uint, error) {

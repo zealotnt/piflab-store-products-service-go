@@ -11,16 +11,23 @@ import (
 func GetProductsDetailHandler(app *App) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, c Context) {
 		// the purpose of form is to get form.Fields, so don't care about Binding errors
-		form := new(GetProductForm)
-		Bind(form, r)
+		id_list := c.IDs()
 
-		product, err := (ProductRepository{app.DB}).FindById(c.ID())
-		if err != nil {
-			JSON(w, err, 404)
+		// if only 1 id provided, return as normal
+		if len(id_list) == 1 {
+			product, err := (ProductRepository{app.DB}).FindById(uint(id_list[0]))
+			if err != nil {
+				JSON(w, err, 404)
+				return
+			}
+
+			JSON(w, product)
 			return
 		}
 
-		JSON(w, product)
+		// if list of id request, handle differently
+		products := (ProductRepository{app.DB}).FindByListId(id_list)
+		JSON(w, products)
 	}
 }
 
@@ -75,7 +82,7 @@ func CreateProductHandler(app *App) HandlerFunc {
 
 func UpdateProductHandler(app *App) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, c Context) {
-		product, err := (ProductRepository{app.DB}).FindById(c.ID())
+		product, err := (ProductRepository{app.DB}).FindById(uint(c.ID()))
 		if err != nil {
 			JSON(w, err, 404)
 			return
