@@ -51,7 +51,7 @@ func GetProductsHandler(app *App) HandlerFunc {
 			return
 		}
 
-		products_by_pages := products.GetPaging(form.Offset, form.Limit, total)
+		products_by_pages := products.GetPaging(form.Offset, form.Limit, *form.Sort, form.Search, total)
 		JSON(w, products_by_pages)
 	}
 }

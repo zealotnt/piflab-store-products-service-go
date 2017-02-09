@@ -77,11 +77,12 @@ func (repo ProductRepository) GetAll() (*ProductSlice, error) {
 func (repo ProductRepository) GetPage(offset uint, limit uint, sort_field string, sort_order string, search string) (*ProductSlice, uint, error) {
 	products := &ProductSlice{}
 	var err error
+	var lower_search string
 
 	if search == "" {
 		err = repo.DB.Order(sort_field + " " + sort_order).Offset(int(offset)).Limit(int(limit)).Find(products).Error
 	} else {
-		lower_search := strings.ToLower(search)
+		lower_search = strings.ToLower(search)
 		err = repo.DB.Order(sort_field + " " + sort_order).Offset(int(offset)).Limit(int(limit)).Where("LOWER(name) LIKE '%" + lower_search + "%'").Find(products).Error
 	}
 
@@ -89,7 +90,12 @@ func (repo ProductRepository) GetPage(offset uint, limit uint, sort_field string
 		(*products)[idx].GetImageUrl()
 	}
 
-	count, _ := repo.CountProduct()
+	count := uint(0)
+	if search == "" {
+		repo.DB.Table("products").Order(sort_field + " " + sort_order).Count(&count)
+	} else {
+		repo.DB.Table("products").Order(sort_field + " " + sort_order).Where("LOWER(name) LIKE '%" + lower_search + "%'").Count(&count)
+	}
 
 	return products, count, err
 }
