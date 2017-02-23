@@ -33,6 +33,8 @@ func GetProductsDetailHandler(app *App) HandlerFunc {
 
 func GetProductsHandler(app *App) HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, c Context) {
+		host_url := HostURL(r)
+
 		form := new(GetProductForm)
 
 		if err := Bind(form, r); err != nil {
@@ -51,7 +53,7 @@ func GetProductsHandler(app *App) HandlerFunc {
 			return
 		}
 
-		products_by_pages := products.GetPaging(form.Offset, form.Limit, *form.Sort, form.Search, total)
+		products_by_pages := products.GetPaging(host_url, form.Offset, form.Limit, *form.Sort, form.Search, total)
 		JSON(w, products_by_pages)
 	}
 }

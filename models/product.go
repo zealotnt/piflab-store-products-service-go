@@ -62,7 +62,7 @@ const (
 	DETAIL
 )
 
-func getPage(offset uint, limit uint, total uint, sort string, search string) PageUrl {
+func getPage(host_url string, offset uint, limit uint, total uint, sort string, search string) PageUrl {
 	prevNum := uint64(offset - limit)
 	nextNum := uint64(offset + limit)
 
@@ -80,8 +80,8 @@ func getPage(offset uint, limit uint, total uint, sort string, search string) Pa
 			prevNum = 0
 		}
 	}
-	next := "/products?offset=" + strconv.FormatUint(nextNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
-	previous := "/products?offset=" + strconv.FormatUint(prevNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
+	next := host_url + "/products?offset=" + strconv.FormatUint(nextNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
+	previous := host_url + "/products?offset=" + strconv.FormatUint(prevNum, 10) + "&limit=" + strconv.FormatUint(uint64(limit), 10)
 	if sort != "" {
 		next += "&sort=" + sort
 		previous += "&sort=" + sort
@@ -114,10 +114,10 @@ func getPage(offset uint, limit uint, total uint, sort string, search string) Pa
 	}
 }
 
-func (products ProductSlice) GetPaging(offset uint, limit uint, sort string, search string, total uint) *ProductPage {
+func (products ProductSlice) GetPaging(host_url string, offset uint, limit uint, sort string, search string, total uint) *ProductPage {
 	return &ProductPage{
 		Data:   &products,
-		Paging: getPage(offset, limit, total, sort, search),
+		Paging: getPage(host_url, offset, limit, total, sort, search),
 	}
 }
 

@@ -157,7 +157,7 @@ var _ = Describe("ProductSlice Test", func() {
 			description: `Get only 1 product per page, with offset=0.` +
 				`Return val should contain valid "next" field, and null "previous" field`,
 			url:    `/products?offset=0&limit=1`,
-			expect: `"paging":{"next":"/products?offset=1\u0026limit=1","previous":null}`}, {
+			expect: `"paging":{"next":"/products?offset=1\u0026limit=1\u0026sort=id|desc","previous":null}`}, {
 
 			/*2*/
 			description: `Get page with very big offset (bigger than maximum current product).
@@ -169,7 +169,7 @@ var _ = Describe("ProductSlice Test", func() {
 				`&limit=1`,
 			expect: `"paging":{"next":null,"previous":"/products?offset=` +
 				strconv.FormatUint(uint64(product_counts-1), 10) +
-				`\u0026limit=1"}`}, {
+				`\u0026limit=1\u0026sort=id|desc"}`}, {
 
 			/*3*/
 			description: `Get page with very big offset (bigger than maximum current product).
@@ -191,7 +191,7 @@ var _ = Describe("ProductSlice Test", func() {
 			url: `/products?offset=` + strconv.FormatUint(uint64(product_counts/2), 10) +
 				`&limit=1`,
 			expect: `"paging":{"next":"/products?offset=` +
-				strconv.FormatUint(uint64(product_counts/2+1), 10) + `\u0026limit=1",` +
+				strconv.FormatUint(uint64(product_counts/2+1), 10) + `\u0026limit=1\u0026sort=id|desc",` +
 				`"previous":"/products?offset=` +
 				strconv.FormatUint(uint64(product_counts/2-1), 10) + `\u0026limit=1`},
 		}
